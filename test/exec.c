@@ -1,16 +1,35 @@
-#include <unistd.h>
-#include <stdio.h>
-#include <stdlib.h>
+#include <unistd.h> // fork(), execvp(), wait()
+#include <stdio.h>  // printf, perror
+#include <stdlib.h> // exit
 
 int main() {
-    printf("execvpを呼び出す前です。\n");
+    pid_t pid;
+    char *argv[] = {"ls", "-l", NULL}; // 実行したいコマンドと引数
 
-    char *args[] = {"ls", "-l", NULL}; // 引数配列を作成
+    printf("親プロセス開始 (PID: %d)\n", getpid());
 
-    // PATH環境変数を使って "ls" を検索し、args配列の引数で実行
-    execvp("ls", args);
+    pid = fork(); // 子プロセスを作成
 
-    // execvpが成功した場合、ここには到達しない
-    perror("execvpの呼び出しに失敗しました");
-    return 1;
+    if (pid == -1) {
+        perror("fork 失敗");
+        return 1;
+    } else if (pid == 0) {
+        // --- 子プロセス ---
+        printf("子プロセス開始 (PID: %d)。コマンド '%s' を実行します。\n", getpid(), argv[0]);
+        execvp(argv[0], argv); // コマンドを実行（成功すればここから下は実行されない）
+
+        // execvp が失敗した場合のみここに到達
+        perror("execvp 失敗");
+        exit(1); // エラー終了
+    } else {
+        // --- 親プロセス ---
+        int status;
+        printf("親プロセスは子プロセス (PID: %d) の終了を待っています。\n", pid);
+        wait(&status); // 子プロセスの終了を待つ
+
+        printf("子プロセス (PID: %d) が終了しました。ステータス: %d\n", pid, WEXITSTATUS(status));
+        printf("親プロセス終了 (PID: %d)\n", getpid());
+    }
+
+    return 0;
 }

@@ -50,6 +50,9 @@ $(OBJDIR):
 clean:
 	rm -rf $(OBJDIR) $(BINDIR)
 
+# 再ビルド (clean + all)
+re: clean all
+
 # デバッグ用ターゲット
 debug: CFLAGS += -g -DDEBUG
 debug: $(TARGET)
@@ -58,4 +61,5 @@ debug: $(TARGET)
 install: $(TARGET)
 	cp $(TARGET) /usr/local/bin/
 
-.PHONY: all clean debug install 
+.PHONY: all clean debug install re
+g

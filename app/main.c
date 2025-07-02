@@ -1,9 +1,11 @@
 #include <shell.h>
-
+extern char **environ; //環境変数呼び出し
 int main() {
     // --- 1. 初期化 ---
     // 設定ファイルの読み込みなど（高度な機能）
 	shell_animation();
+    //--- signal handler ---
+    signal(SIGINT, signal_handler);
     // --- 2. メインループ ---
     while (1) {
     	char *line = readline("myshell> ");

@@ -75,5 +75,6 @@ void free_token_list(Token* head);
 Token* tokenize_strings(char** str_array, size_t count);
 Command* parser(char* line);
 void print_command_list(Command* head);
+void signal_handler(int signum);
 
 #endif /* SHELL_H */
